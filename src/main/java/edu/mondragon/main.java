@@ -1,4 +1,4 @@
-package src.main.java.edu.mondragon;
+package edu.mondragon;
 
 public class main {
     
