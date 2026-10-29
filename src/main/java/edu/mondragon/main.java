@@ -1,30 +1,41 @@
 package edu.mondragon;
 
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 
 public class Main {
+
+    /**
+     * Nombre que se muestra en el mensaje de uso (el "$(COMMAND)" del enunciado).
+     * Java no expone el nombre del ejecutable de forma portable, así que se usa
+     * una constante: ajústala si los tests esperan otro valor.
+     */
+    private static final String COMMAND = "glob";
+
     public static void main(String[] args) {
-        // 1. Comprobar argumentos
-        if (args.length != 1) {
-            System.out.println("Usage: $(COMMAND) [PATTERN]");
-            System.exit(-1); // Salir con error
+        // Debe recibir EXACTAMENTE un argumento (el patrón)
+        if (args == null || args.length != 1) {
+            System.out.println("Usage: " + COMMAND + " [PATTERN]");
+            return;
         }
 
-        // 2. Crear el patrón
-        GlobPattern glob = new GlobPattern(args[0]);
-        
-        // 3. Leer de STDIN
-        Scanner scanner = new Scanner(System.in);
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            
-            // 4. Imprimir resultado en STDOUT
-            if (glob.match(line)) {
-                System.out.println("1");
-            } else {
-                System.out.println("0");
+        GlobPattern pattern = new GlobPattern(args[0]);
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        PrintStream out = System.out;
+
+        try {
+            String line;
+            while ((line = in.readLine()) != null) {
+                out.println(pattern.match(line) ? "1" : "0");
             }
+        } catch (IOException e) {
+            // Error de E/S: número negativo
+            out.println("-1");
+            out.flush();
+            System.exit(1);
         }
-        scanner.close();
     }
 }
