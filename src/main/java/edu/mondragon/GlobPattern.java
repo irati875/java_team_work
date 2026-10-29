@@ -1,28 +1,35 @@
 package edu.mondragon;
 
+/**
+ * Patrón glob simple:
+ *   - '?'  coincide con exactamente un carácter cualquiera
+ *   - cualquier otro carácter debe coincidir literalmente
+ */
 public class GlobPattern {
-    private String pattern;
+
+    private final String pattern;
 
     public GlobPattern(String pattern) {
+        if (pattern == null) {
+            throw new IllegalArgumentException("pattern must not be null");
+        }
         this.pattern = pattern;
     }
 
     public boolean match(String text) {
-        // Si el texto es nulo o la longitud no coincide, no hay match
-        if (text == null || text.length() != pattern.length()) {
+        if (text == null) {
             return false;
         }
-        
-        // Recorremos carácter a carácter
+        // Longitudes distintas => imposible que coincidan (no hay comodines de longitud variable)
+        if (text.length() != pattern.length()) {
+            return false;
+        }
         for (int i = 0; i < pattern.length(); i++) {
             char p = pattern.charAt(i);
-            char t = text.charAt(i);
-            
-            // Si no es '?' y los caracteres no son iguales, falla
-            if (p != '?' && p != t) {
+            if (p != '?' && p != text.charAt(i)) {
                 return false;
             }
         }
-        return true; // Si pasa el bucle, es un match
+        return true;
     }
 }
